@@ -1,5 +1,5 @@
 # ReactorPhysicsMath
-Mathematica Scripts for my Reactor Physics Lectures
+Mathematica Scripts for my Reactor Physics Lectures (www.nuclearfuel.me)
 
 These scripts are part of the lecture materials for my courses on reactor physics at Technical University of Munich.  
 
