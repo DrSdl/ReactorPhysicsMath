@@ -1,0 +1,57 @@
+echo 'O16 processing'
+cp ./n-008_O_016.endf  tape20
+cat>input <<EOF
+ -- O_016 Process O-16
+ moder  /  Convert data to binary on Unit-21
+ 1 -21
+ 'ENDF/B-VII.1  O-16' /
+ 20  825
+ 0 /
+ reconr / Reconstruct x-sect from resonance parameters on Unit-22
+ -21 -22
+ 'PENDF TAPE FOR O-16 FROM ENDF/B-VII.1'/
+  825 2 /
+ 0.001 0./ Reconstruction 0.1%
+ '8-O-16 FROM ENDF/B-VII.1  '/
+ ' PROCESSED BY NJOY-2016 '/
+ 0 /
+ broadr / Doppler broaden to Unit-23
+ -21 -22  -23
+  825 1  0  0  0. /
+ 0.001 /
+ 1100.
+ 0 /
+ unresr / Doppler broaden & self-shield URP data to Unit-24
+ -21 -23 -24
+  825 1 5 1
+ 1100.
+ 1.E10 10000. 1000. 40. 28.
+ 0 /
+ thermr / Add thermal scattering data to Unit-26
+ 0 -24 -26
+ 0  825 12 1 1 0 0 1 221 1
+ 1100.
+ 0.001  4.0
+ groupr / Generate group averaged data on Unit-25
+ -21  -26  0  25
+  825 9 0  5  1  1   1  1
+ '8-O-16 FROM ENDF/B-VII.1  '/
+ 1100.
+ 1000. 
+ 3 /          Temperature 1100.K
+ 3 221 / thermal xsec
+ 6 /
+ 6 221 /
+ 0 /
+ 0 /
+ errorr / Process data with errorr module
+ -21 -26 25 33 /
+ 825 9 5 1 0 /
+ 1 1100. /
+ 0 33 /
+ stop
+EOF
+./njoy<input
+echo 'saving output and pendf files'
+cp tape25 o16_1100_groupr
+cp tape33 o16_1100_groupr_errorr

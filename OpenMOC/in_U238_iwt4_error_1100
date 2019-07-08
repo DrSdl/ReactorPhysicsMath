@@ -1,0 +1,62 @@
+echo 'NJOY U238 processing'
+cp ./n-092_U_238.endf tape20
+cat>input <<EOF
+ -- U_238 Process U-238 (run WIMSR with FP yields)
+ moder  /  Convert data to binary to Unit-21
+ 1 -21
+ 'ENDF/B-VII.1 U-238' /
+ 20 9237
+ 0 /
+ reconr / Reconstruct x-sect from resonance parameters to Unit-22
+ -21 -22
+ 'PENDF TAPE FOR U-238 FROM ENDF/B-VII.1   '/
+ 9237 2 /
+ 0.001  0.  0.005/ Reconstruction 0.1% (0.5% max)
+ '92-U-238 FROM ENDF/B-VII.1  '/
+ ' PROCESSED BY NJOY-2016 '/
+ 0 /
+ broadr / Doppler broaden to Unit-23
+ -21 -22  -23
+ 9237 1  0  0  0. /
+ 0.001 /
+ 1100.
+ 0 /
+ purr / Doppler broaden & self-shield URP data to Unit-24
+ -21 -23 -24
+ 9237 1 10 20 100 0 0 /
+ 1100.
+ 1.E10 2.E4 3600. 1000. 260. 140. 64. 52. 28. 10. /
+ 0 /
+ thermr / Add thermal scattering data to Unit-26
+ 0 -24 -26
+ 0 9237 12 1 1 0 0 1 221 1
+ 1100.
+ 0.001  4.0
+ groupr / Generate group averaged data on Unit-25
+ -21  -26  0  25
+ 9237 9 0 -5  1  1  1  1
+ '92-U-238 FROM ENDF/B-VII.1  '/
+ 1100.
+ 1000. 
+ 400 10.6 5000 0 0 0.7768 7.5 .40 1.7E-7 0.086  / weight function options
+ 3 /          Temperature 1100.K
+ 3 221 / thermal xsec
+ 3 452 / total fission yield
+ 3 455 / delayed nubar
+ 5 18  / prompt spectrum
+ 5 455 / delayed spectra
+ 6 /
+ 6 221 / thermal scattering matrix
+ 0 /
+ 0 /
+ errorr / Process data with errorr module
+ -21 -26 25 33 /
+ 9237 9 5 1 0 /
+ 1 1100. /
+ 0 33 /
+ stop
+EOF
+./njoy<input
+echo 'saving output and pendf files'
+cp tape25 u238_1100_groupr
+cp tape33 u238_1100_groupr_error
